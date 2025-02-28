@@ -13,78 +13,111 @@
 <body>
     <div class="container mt-5">
         <h1 class="mb-4">จัดการผู้ใช้</h1>
+
+        <!-- View Toggle -->
         <div class="mb-3">
-            <input type="text" id="search" class="form-control" placeholder="ค้นหาชื่อหรือนามสกุล" oninput="filterUsers()">
+            <button class="btn btn-secondary" onclick="toggleView('table')">แสดงแบบตาราง</button>
+            <button class="btn btn-secondary" onclick="toggleView('list')">แสดงแบบรายการ</button>
+        </div>
+
+        <!-- Search Bar and Filter -->
+        <div class="mb-3">
+            <input type="text" id="search" class="form-control" placeholder="ค้นหาชื่อ, นามสกุล, อายุ, หรือเพศ" oninput="filterUsers()">
         </div>
         <div class="mb-3">
             <select id="filterGender" class="form-select" onchange="filterUsers()">
                 <option value="">ทั้งหมด</option>
                 <option value="ชาย">ชาย</option>
                 <option value="หญิง">หญิง</option>
+                <option value="อื่นๆ">อื่นๆ</option>
             </select>
         </div>
 
-        <button class="btn btn-primary mb-3" onclick="openAddModal()">เพิ่มผู้ใช้ใหม่</button>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>ชื่อ</th>
-                    <th>นามสกุล</th>
-                    <th>อายุ</th>
-                    <th>เพศ</th>
-                    <th>ความสนใจ</th>
-                    <th>คำอธิบาย</th>
-                    <th>รายละเอียด</th>
-                </tr>
-            </thead>
-            <tbody id="userTable"></tbody>
-        </table>
+        <!-- Users View -->
+        <div id="userTableView" style="display: block;">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ชื่อ</th>
+                        <th>นามสกุล</th>
+                        <th>อายุ</th>
+                        <th>เพศ</th>
+                        <th>รายละเอียด</th>
+                    </tr>
+                </thead>
+                <tbody id="userTable"></tbody>
+            </table>
+        </div>
+
+        <div id="userListView" style="display: none;">
+            <div class="list-group" id="userList"></div>
+        </div>
+
     </div>
 
-    <!-- Modal Add/Edit -->
+    <!-- Modal User Detail -->
     <div id="userModal" class="modal fade" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="userModalLabel">เพิ่ม/แก้ไข ผู้ใช้</h5>
+                    <h5 class="modal-title" id="userModalLabel">รายละเอียดผู้ใช้</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="userModalBody">
+                    <!-- User details will be populated here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                    <button type="button" class="btn btn-warning" onclick="openEditModal()">แก้ไข</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteUser()">ลบข้อมูล</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit User -->
+    <div id="editUserModal" class="modal fade" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">แก้ไขผู้ใช้</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="userForm">
-                        <input type="hidden" id="userId">
+                    <form id="editUserForm">
                         <div class="mb-3">
-                            <label class="form-label">ชื่อ</label>
-                            <input type="text" id="firstname" class="form-control" required>
+                            <label for="firstname" class="form-label">ชื่อ</label>
+                            <input type="text" class="form-control" id="firstname" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">นามสกุล</label>
-                            <input type="text" id="lastname" class="form-control" required>
+                            <label for="lastname" class="form-label">นามสกุล</label>
+                            <input type="text" class="form-control" id="lastname" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">อายุ</label>
-                            <input type="number" id="age" class="form-control" required>
+                            <label for="age" class="form-label">อายุ</label>
+                            <input type="number" class="form-control" id="age" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">เพศ</label>
-                            <select id="gender" class="form-select" required>
+                            <label for="gender" class="form-label">เพศ</label>
+                            <select class="form-select" id="gender" required>
                                 <option value="ชาย">ชาย</option>
                                 <option value="หญิง">หญิง</option>
+                                <option value="อื่นๆ">อื่นๆ</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">ความสนใจ</label>
-                            <input type="text" id="interests" class="form-control">
+                            <label for="interests" class="form-label">ความสนใจ</label>
+                            <input type="text" class="form-control" id="interests">
                         </div>
-
                         <div class="mb-3">
-                            <label class="form-label">คำอธิบาย</label>
-                            <textarea id="description" class="form-control"></textarea>
+                            <label for="description" class="form-label">คำอธิบาย</label>
+                            <textarea class="form-control" id="description"></textarea>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                    <button type="button" class="btn btn-primary" onclick="saveUser()">บันทึก</button>
+                    <button type="button" class="btn btn-primary" onclick="saveUserChanges()">บันทึก</button>
                 </div>
             </div>
         </div>
@@ -93,12 +126,18 @@
     <script>
         const API_URL = "http://localhost:8000/users";
         let allUsers = [];
+        let currentUser = null;
 
         // Fetch users from the API
         async function fetchUsers() {
-            const response = await axios.get(API_URL);
-            allUsers = response.data;
-            filterUsers();
+            try {
+                const response = await axios.get(API_URL);
+                allUsers = response.data;
+                filterUsers();
+            } catch (error) {
+                console.error("Error fetching users:", error);
+                alert("ไม่สามารถดึงข้อมูลผู้ใช้ได้");
+            }
         }
 
         // Filter users based on search and gender
@@ -121,7 +160,9 @@
 
         function matchesSearch(user, searchValue) {
             return user.firstname.toLowerCase().includes(searchValue) ||
-                user.lastname.toLowerCase().includes(searchValue);
+                user.lastname.toLowerCase().includes(searchValue) ||
+                user.age.toString().includes(searchValue) ||
+                user.gender.toLowerCase().includes(searchValue);
         }
 
         function matchesGender(user, genderFilter) {
@@ -129,62 +170,82 @@
         }
 
         function displayUsers(users) {
+            if (users.length === 0) {
+                document.getElementById('userTable').innerHTML = "<tr><td colspan='5'>ไม่พบข้อมูลผู้ใช้</td></tr>";
+                document.getElementById('userList').innerHTML = "<div class='list-group-item'>ไม่พบข้อมูลผู้ใช้</div>";
+                return;
+            }
+            if (document.getElementById('userTableView').style.display === 'block') {
+                displayTableView(users);
+            } else {
+                displayListView(users);
+            }
+        }
+
+        // Display users in Table View
+        function displayTableView(users) {
             document.getElementById('userTable').innerHTML = users.map(user => `
-                <tr>
+                <tr onclick="showUserDetails(${user.id})">
                     <td>${user.firstname}</td>
                     <td>${user.lastname}</td>
                     <td>${user.age}</td>
                     <td>${user.gender}</td>
-                    <td>${user.interests || '-'}</td>
-                    <td>${user.description || '-'}</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm" onclick='openEditModal(${JSON.stringify(user)})'>แก้ไข</button>
-                        <button class="btn btn-danger btn-sm" onclick='deleteUser(${user.id})'>ลบ</button>
-                    </td>
+                    <td><button class="btn btn-info btn-sm">ดูรายละเอียด</button></td>
                 </tr>`).join('');
         }
 
-        // Delete user
-        async function deleteUser(id) {
-            if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้นี้?")) {
-                await axios.delete(`${API_URL}/${id}`);
-                fetchUsers();
+        // Display users in List View
+        function displayListView(users) {
+            document.getElementById('userList').innerHTML = users.map(user => `
+                <a href="javascript:void(0);" class="list-group-item list-group-item-action" onclick="showUserDetails(${user.id})">
+                    <h5 class="mb-1">${user.firstname} ${user.lastname}</h5>
+                    <p class="mb-1">อายุ: ${user.age} ปี</p>
+                    <small>เพศ: ${user.gender}</small>
+                </a>`).join('');
+        }
+
+        // Show User Details in Modal
+        function showUserDetails(userId) {
+            currentUser = allUsers.find(user => user.id === userId);
+            if (!currentUser) {
+                alert("ไม่พบข้อมูลผู้ใช้");
+                return;
             }
-        }
-
-        // Close modal
-        function closeModal() {
-            const modal = new bootstrap.Modal(document.getElementById("userModal"));
-            modal.hide();
-        }
-
-        // Open add modal
-        function openAddModal() {
-            document.getElementById("userForm").reset();
-            document.getElementById("userId").value = "";
+            const modalBody = document.getElementById("userModalBody");
+            modalBody.innerHTML = `
+                <h5>ชื่อ: ${currentUser.firstname} ${currentUser.lastname}</h5>
+                <p>อายุ: ${currentUser.age} ปี</p>
+                <p>เพศ: ${currentUser.gender}</p>
+                <p>ความสนใจ: ${currentUser.interests || '-'}</p>
+                <p>คำอธิบาย: ${currentUser.description || '-'}</p>
+            `;
             const modal = new bootstrap.Modal(document.getElementById("userModal"));
             modal.show();
-            document.querySelector(".modal-title").textContent = "เพิ่มผู้ใช้ใหม่";
         }
 
-        // Open edit modal
-        function openEditModal(user) {
-            document.getElementById("userId").value = user.id;
-            document.getElementById("firstname").value = user.firstname;
-            document.getElementById("lastname").value = user.lastname;
-            document.getElementById("age").value = user.age;
-            document.getElementById("gender").value = user.gender;
-            document.getElementById("interests").value = user.interests || "";
-            document.getElementById("description").value = user.description || "";
-            const modal = new bootstrap.Modal(document.getElementById("userModal"));
+        // Open edit modal with current user data
+        function openEditModal() {
+            if (!currentUser) {
+                alert("ไม่พบข้อมูลผู้ใช้");
+                return;
+            }
+            document.getElementById("firstname").value = currentUser.firstname;
+            document.getElementById("lastname").value = currentUser.lastname;
+            document.getElementById("age").value = currentUser.age;
+            document.getElementById("gender").value = currentUser.gender;
+            document.getElementById("interests").value = currentUser.interests || '';
+            document.getElementById("description").value = currentUser.description || '';
+            const modal = new bootstrap.Modal(document.getElementById("editUserModal"));
             modal.show();
-            document.querySelector(".modal-title").textContent = "แก้ไขผู้ใช้";
         }
 
-        // Save user data
-        async function saveUser() {
-            const id = document.getElementById("userId").value;
-            const data = {
+        // Save user changes
+        async function saveUserChanges() {
+            if (!currentUser) {
+                alert("ไม่พบข้อมูลผู้ใช้");
+                return;
+            }
+            const updatedUser = {
                 firstname: document.getElementById("firstname").value,
                 lastname: document.getElementById("lastname").value,
                 age: document.getElementById("age").value,
@@ -192,17 +253,46 @@
                 interests: document.getElementById("interests").value,
                 description: document.getElementById("description").value
             };
-
             try {
-                if (id) {
-                    await axios.put(`${API_URL}/${id}`, data);
-                } else {
-                    await axios.post(API_URL, data);
-                }
-                closeModal();
+                await axios.put(`${API_URL}/${currentUser.id}`, updatedUser);
                 fetchUsers();
+                const modal = new bootstrap.Modal(document.getElementById("editUserModal"));
+                modal.hide();
+                alert("บันทึกข้อมูลสำเร็จ");
             } catch (error) {
-                console.error("Error saving user:", error);
+                console.error("Error updating user:", error);
+                alert("ไม่สามารถบันทึกข้อมูลได้");
+            }
+        }
+
+        // Delete user
+        async function deleteUser() {
+            if (!currentUser) {
+                alert("ไม่พบข้อมูลผู้ใช้");
+                return;
+            }
+            if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลผู้ใช้นี้?")) {
+                try {
+                    await axios.delete(`${API_URL}/${currentUser.id}`);
+                    fetchUsers();
+                    const modal = new bootstrap.Modal(document.getElementById("userModal"));
+                    modal.hide();
+                    alert("ลบข้อมูลสำเร็จ");
+                } catch (error) {
+                    console.error("Error deleting user:", error);
+                    alert("ไม่สามารถลบข้อมูลได้");
+                }
+            }
+        }
+
+        // Toggle between Table View and List View
+        function toggleView(view) {
+            if (view === 'table') {
+                document.getElementById('userTableView').style.display = 'block';
+                document.getElementById('userListView').style.display = 'none';
+            } else {
+                document.getElementById('userTableView').style.display = 'none';
+                document.getElementById('userListView').style.display = 'block';
             }
         }
 
